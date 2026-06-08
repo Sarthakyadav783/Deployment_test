@@ -4,6 +4,7 @@ export default async function Home() {
 
   return (
     <div>
+      <h1>Hello world what's up i am doing a CD pipeline test</h1>
       Name:
       {user?.username}
       Password:
