@@ -1,0 +1,24 @@
+name: Deploy to staging
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  redeploy_everything:
+    name: Deploying everything to the staging cluster
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: SSH into server
+        run: |
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh_key
+          chmod 600 ~/.ssh_key
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh_key ubuntu@${{ secrets.DEV_HOST }} "
+            cd ~/Deployment_test &&
+            git pull origin main &&
+            cd packages/prisma && pnpm exec prisma generate &&
+            cd ~/Deployment_test/apps/web && pnpm run build &&
+            pm2 restart http_server ws_server web
+          "
